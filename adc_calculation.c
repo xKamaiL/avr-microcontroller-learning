@@ -17,6 +17,7 @@ int8_t U[16] = {0};
 		
 int main(void)
 {	
+	mockEEPROM(); // for testing
 	eeprom_read_block(S,(void*)0x010,16);
 	eeprom_read_block(T,(void*)0x030,16);
 	DDRC = 0xFF;
@@ -45,14 +46,20 @@ ISR(TIMER1_COMPA_vect){
 	while((ADCSRA &(1<<ADIF)) ==0);
 	unsigned int raw = ADC; // 16bit
 	U[0] = raw>>2; // 10bit to 8bit
-	int (*B)[16] = (PINC&(1<<7)) ? &T : &S;
-	int result = 0;
+	int *B = (PINC&(1<<7)) ? &T : &S; //
+	int result = 0; // 20bit
 	for (int i=0;i<16;i++){
-		result += U[i] * (*B)[i];
+		result += U[i] * (*(B+i));
 	}
 	
 	// result -> [...4:PORTA:PORTD]
-	PORTD = result && 0xFF;
-	PORTA = (result >> 8) && 0xFF;
-	PORTC = (result >> 16) && 0xF;
+	PORTD = result & 0xFF;
+	PORTA = (result >> 8) & 0xFF;
+	PORTC = (result >> 16) & 0xF;
+}
+
+void mockEEPROM(){
+	int x[16] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+	eeprom_write_block(x,(void*)0x010,16);
+	eeprom_write_block(x,(void*)0x030,16);
 }
