@@ -46,7 +46,7 @@ ISR(TIMER1_COMPA_vect){
 	while((ADCSRA &(1<<ADIF)) ==0);
 	unsigned int raw = ADC; // 16bit
 	U[0] = raw>>2; // 10bit to 8bit
-	int *B = (PINC&(1<<7)) ? &T : &S; //
+	int *B = !(PINC&(1<<7)) ? &T : &S; //
 	int result = 0; // 20bit
 	for (int i=0;i<16;i++){
 		result += U[i] * (*(B+i));
