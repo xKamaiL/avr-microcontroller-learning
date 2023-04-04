@@ -20,7 +20,7 @@ int main(void)
 	TCCR1A |= 0;
 	// clk/1024 and CTC mode @32MHz
 	TCCR1B |= 1 << WGM12 | 1 << CS12 | 1 << CS10;
-	OCR1A = 321; // calculation 10ms
+	OCR1A = 312; // calculation 10ms
 
 	TIMSK = 1 << OCIE1A;  // timer1 interrupt
 	ADCSRA = (1 << ADEN); // enable adc
